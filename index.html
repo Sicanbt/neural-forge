@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Forge — AI Code Generation Platform</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --accent: #7c3aed;
+    --accent2: #a855f7;
+    --accent3: #c084fc;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --border: #2d2d3d;
+    --glow: rgba(124,58,237,0.3);
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; width: 100%; background: rgba(10,10,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 100; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, var(--accent2), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent3); }
+  .nav-cta { background: var(--accent); color: #fff; border: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; }
+  .nav-cta:hover { background: var(--accent2); box-shadow: 0 0 20px var(--glow); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(124,58,237,0.15) 0%, transparent 70%); pointer-events: none; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.4); border-radius: 999px; padding: 0.35rem 1rem; font-size: 0.8rem; color: var(--accent3); margin-bottom: 1.5rem; }
+  .hero-badge span { width: 6px; height: 6px; background: var(--accent3); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+  h1 { font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 900; line-height: 1.1; letter-spacing: -2px; margin-bottom: 1.5rem; }
+  h1 .grad { background: linear-gradient(135deg, #fff 0%, var(--accent2) 50%, var(--accent3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: 1.2rem; color: var(--text2); max-width: 600px; margin-bottom: 2.5rem; }
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--glow); }
+  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 0.85rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s, color 0.2s; text-decoration: none; }
+  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent3); }
+
+  /* STATS */
+  .stats { display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border); }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent3); }
+  .stat-label { font-size: 0.85rem; color: var(--text2); }
+
+  /* SECTION */
+  section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.75rem; }
+  .section-title { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; }
+  .section-sub { color: var(--text2); max-width: 560px; margin-bottom: 3rem; }
+
+  /* AGENTS */
+  .agents-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+  .agent-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; position: relative; overflow: hidden; transition: border-color 0.3s, transform 0.3s; }
+  .agent-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); opacity: 0; transition: opacity 0.3s; }
+  .agent-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .agent-card:hover::before { opacity: 1; }
+  .agent-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+  .agent-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .agent-desc { font-size: 0.875rem; color: var(--text2); line-height: 1.5; }
+  .agent-tag { display: inline-block; margin-top: 0.75rem; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(124,58,237,0.15); color: var(--accent3); border: 1px solid rgba(124,58,237,0.3); }
+
+  /* FEATURES */
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .feature-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .feature-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .feature-desc { font-size: 0.875rem; color: var(--text2); }
+
+  /* MIMO BANNER */
+  .mimo-banner { background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.1)); border: 1px solid rgba(124,58,237,0.4); border-radius: 20px; padding: 3rem; text-align: center; margin: 2rem 0; position: relative; overflow: hidden; }
+  .mimo-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(124,58,237,0.1) 0%, transparent 70%); }
+  .mimo-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.75rem; }
+  .mimo-sub { color: var(--text2); max-width: 500px; margin: 0 auto 1.5rem; }
+  .mimo-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(124,58,237,0.2); border: 1px solid var(--accent); border-radius: 999px; padding: 0.5rem 1.25rem; font-size: 0.9rem; font-weight: 700; color: var(--accent3); }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; color: var(--text2); font-size: 0.875rem; }
+  footer .footer-logo { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, var(--accent2), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+
+  /* GRID BG */
+  .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+  main { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="logo">⚡ Neural Forge</div>
+  <ul class="nav-links">
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#mimo">MiMo V2.5</a></li>
+  </ul>
+  <button class="nav-cta">Get Started</button>
+</nav>
+
+<main>
+  <div class="hero">
+    <div class="hero-badge"><span></span> Powered by MiMo V2.5 · Now in Beta</div>
+    <h1><span class="grad">AI Code Generation</span><br>at Forge Speed</h1>
+    <p class="hero-sub">Neural Forge deploys a multi-agent AI pipeline — Architect, Coder, Reviewer, and Deployer — to build production-ready software from natural language.</p>
+    <div class="hero-btns">
+      <a href="#agents" class="btn-primary">Meet the Agents</a>
+      <a href="#features" class="btn-secondary">See Features</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Specialized Agents</div></div>
+      <div class="stat"><div class="stat-num">10×</div><div class="stat-label">Faster Delivery</div></div>
+      <div class="stat"><div class="stat-num">99.2%</div><div class="stat-label">Code Accuracy</div></div>
+      <div class="stat"><div class="stat-num">MiMo V2.5</div><div class="stat-label">Core Model</div></div>
+    </div>
+  </div>
+
+  <section id="agents">
+    <div class="section-label">Agent Pipeline</div>
+    <h2 class="section-title">Four Agents. One Forge.</h2>
+    <p class="section-sub">Each agent is purpose-built for its role in the code generation lifecycle, collaborating in real time to ship quality software.</p>
+    <div class="agents-grid">
+      <div class="agent-card">
+        <div class="agent-icon" style="background:rgba(124,58,237,0.15)">🏗️</div>
+        <div class="agent-name">Architect</div>
+        <div class="agent-desc">Analyzes requirements, designs system architecture, defines module boundaries, and produces technical specifications before a single line of code is written.</div>
+        <span class="agent-tag">System Design</span>
+      </div>
+      <div class="agent-card">
+        <div class="agent-icon" style="background:rgba(168,85,247,0.15)">💻</div>
+        <div class="agent-name">Coder</div>
+        <div class="agent-desc">Translates architectural blueprints into clean, idiomatic, production-grade code across any language or framework with full context awareness.</div>
+        <span class="agent-tag">Code Generation</span>
+      </div>
+      <div class="agent-card">
+        <div class="agent-icon" style="background:rgba(192,132,252,0.15)">🔍</div>
+        <div class="agent-name">Reviewer</div>
+        <div class="agent-desc">Performs automated code review — catching bugs, security vulnerabilities, performance issues, and style violations before they reach production.</div>
+        <span class="agent-tag">Quality Assurance</span>
+      </div>
+      <div class="agent-card">
+        <div class="agent-icon" style="background:rgba(124,58,237,0.15)">🚀</div>
+        <div class="agent-name">Deployer</div>
+        <div class="agent-desc">Handles CI/CD pipeline configuration, containerization, environment setup, and automated deployment to your target infrastructure.</div>
+        <span class="agent-tag">Deployment</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="section-label">Platform Features</div>
+    <h2 class="section-title">Built for Engineering Teams</h2>
+    <p class="section-sub">Neural Forge integrates into your existing workflow with zero friction and maximum output.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Real-Time Collaboration</div>
+        <div class="feature-desc">Watch agents work in parallel — see architecture decisions, code generation, and reviews happen live in your dashboard.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Security-First Code</div>
+        <div class="feature-desc">The Reviewer agent runs OWASP checks, dependency audits, and static analysis on every output before delivery.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Any Stack, Any Cloud</div>
+        <div class="feature-desc">From React frontends to Rust microservices — Neural Forge supports 40+ languages and all major cloud providers.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Audit Trail</div>
+        <div class="feature-desc">Every agent decision is logged, explainable, and reviewable. Full transparency into how your code was generated.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <div class="feature-title">Iterative Refinement</div>
+        <div class="feature-desc">Provide feedback in natural language and the pipeline re-runs automatically, incorporating your changes instantly.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧩</div>
+        <div class="feature-title">API & IDE Plugins</div>
+        <div class="feature-desc">Integrate Neural Forge into VS Code, JetBrains, or your own tooling via our REST API and webhook system.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mimo" style="padding-top:2rem">
+    <div class="mimo-banner">
+      <div class="section-label" style="margin-bottom:0.5rem">Core Intelligence</div>
+      <div class="mimo-title">Powered by MiMo V2.5</div>
+      <p class="mimo-sub">Neural Forge runs on MiMo V2.5 — a state-of-the-art reasoning model optimized for code understanding, generation, and multi-step problem solving.</p>
+      <div class="mimo-badge">🧠 MiMo V2.5 · Advanced Code Reasoning</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-logo">⚡ Neural Forge</div>
+  <p>AI Code Generation Platform · Powered by MiMo V2.5</p>
+  <p style="margin-top:0.5rem;opacity:0.5">© 2026 Neural Forge. All rights reserved.</p>
+</footer>
+
+<script>
+  // Smooth reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.agent-card, .feature-card').forEach(el => {
+    el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
